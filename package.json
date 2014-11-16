@@ -1,0 +1,25 @@
+{
+  "name": "THREE.BasicThirdPersonGame",
+  "author": "Matthias Schuetz",
+  "description": "Game Starter Kit in THREE.js + Cannon.js. The Gruntfile creates a minified version of all libraries and the game into /js/game.js.",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-concat": "~0.3.0"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/matthias-schuetz/three-basicthirdpersongame.git"
+    }
+  ],
+  "licenses": [
+    {
+      "name": "MIT",
+      "url": "https://github.com/matthias-schuetz/three-basicthirdpersongame/blob/master/LICENSE"
+    }
+  ],
+  "homepage": "http://matthiasschuetz.com/three-basicthirdpersongame"
+}
