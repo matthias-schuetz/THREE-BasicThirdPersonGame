@@ -1,0 +1,25 @@
+{
+  "name": "three-basicthirdpersongame",
+  "version": "1.0.0",
+  "authors": [
+    "matthias-schuetz <MatthiasSchuetz@gmx.de>"
+  ],
+  "description": "JavaScript starter kit for your next WebGL 3D game based on THREE.js + Cannon.js",
+  "main": [
+    "./js/game/game.cannon.js",
+    "./js/game/game.core.js",
+    "./js/game/game.core.demo1.js",
+    "./js/game/game.core.demo2.js",
+    "./js/game/game.core.demo3.js",
+    "./js/game/game.core.demo4.js",
+    "./js/game/game.events.js",
+    "./js/game/game.helpers.js",
+    "./js/game/game.models.js",
+    "./js/game/game.models.async.js",
+    "./js/game/game.static.js",
+    "./js/game/game.three.js",
+    "./js/game/game.ui.js"
+  ],
+  "ignore": [],
+  "license": "MIT"
+}
