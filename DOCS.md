@@ -335,8 +335,7 @@ _three.camera.up.set(0, 0, 1);
 With this settings you just can go on but simply use Z as vertical axis. You have to be careful when adding THREE.js entities to your scene since they need to be rotated by 90 degrees also. For example if you want to add a grid helper you would do it this way.
 
 ```javascript
-var grid = new THREE.GridHelper(100, 10
-);
+var grid = new THREE.GridHelper(100, 10);
 grid.rotation.x = Math.PI / 2;
 _three.scene.add(grid);
 ```
@@ -497,7 +496,7 @@ _File → Export → THREE.js (.js)_
 
 and save your 3D model as a JavaScript file. As shown above, the __three.createModel_ function will do the rest. It will create a proper bounding box and rotate your model to the correct vertical axis. If your imported 3D model is pointing forward into the right direction depends on how you created the model inside Blender of course. It's up to you whether you rotate the model in Blender or use JavaScript to rotate it after it has been imported.
 
-It's also your choice where you put your final 3D JSON model. By default, THREE.BasicThirdPersonGame loads the model _synchronously_ via a _<script>_ tag in your HTML file. If you have downloaded the boilerplate with all its files, you should have a file called _game.models.js_ where you can see the JSON contents of the demo player model. The file looks like this:
+It's also your choice where you put your final 3D JSON model. By default, THREE.BasicThirdPersonGame loads the model _synchronously_ via a _script_ tag in your HTML file. If you have downloaded the boilerplate with all its files, you should have a file called _game.models.js_ where you can see the JSON contents of the demo player model. The file looks like this:
 
 ```javascript
 window.game.models = {
