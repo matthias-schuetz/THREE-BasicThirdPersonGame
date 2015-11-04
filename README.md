@@ -1,5 +1,4 @@
-THREE.BasicThirdPersonGame
-==========================
+# THREE.BasicThirdPersonGame
 
 ## JavaScript starter kit for your next WebGL 3D game based on THREE.js + Cannon.js
 
@@ -15,12 +14,14 @@ Here is a list of what is included in this boilerplate:
 
 So the framework forms the starting point for a 3D game using a third-person camera system. In contrast to a first-person (or ego) perspective, a third-person camera automatically follows the main player character or player vehicle of the game and provides an "over the shoulder" view. So the follow camera keeps track of the orientation of the player and sticks to his position by using a fixed distance.
 
+![THREE.BasicThirdPersonGame](http://matthias-schuetz.github.io/three-basicthirdpersongame/three-basicthirdpersongame.png "THREE.BasicThirdPersonGame")
+
 ## Demo
 Either you can play the <a href="http://matthiasschuetz.com/webgl-platforms-game">platforms demo game</a> or you can have a look at the <a href="http://matthiasschuetz.com/three-basicthirdpersongame/examples">examples</a> that also come with this package.
 
 ## Usage
 
-For a detailed documentation, head over to the <a href="http://matthiasschuetz.com/three-basicthirdpersongame/docs">website</a> and learn how to use it. THREE.BasicThirdPersonGame ought to be an interactive tutorial and starting point for your WebGL game based on THREE.js. On this page you should get on overview of how to get the framework up and running. Check out the examples and dive into the code for a deeper impression. The code of all JavaScript files is fully commented.
+For a detailed documentation, head over to the [docs](DOCS.md) or the <a href="http://matthiasschuetz.com/three-basicthirdpersongame/docs">official website</a> and learn how to use it. THREE.BasicThirdPersonGame ought to be an interactive tutorial and starting point for your WebGL game based on THREE.js. On this page you should get on overview of how to get the framework up and running. Check out the examples and dive into the code for a deeper impression. The code of all JavaScript files is fully commented.
 
 Below you will find the basic setup for the game including all necessary files. Normally you start editing the game.core.js since the whole game logic is placed there. Every provided example has its own game.core.demo.js file where the logic only differs slightly. All demos are based on the main libraries and game component files.
 
