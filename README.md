@@ -21,7 +21,7 @@ Either you can play the <a href="http://matthiasschuetz.com/webgl-platforms-game
 
 ## Usage
 
-For a detailed documentation, head over to the [docs](docs/DOCS.md) or the <a href="http://matthiasschuetz.com/three-basicthirdpersongame/docs">official website</a> and learn how to use it. THREE.BasicThirdPersonGame ought to be an interactive tutorial and starting point for your WebGL game based on THREE.js. On this page you should get on overview of how to get the framework up and running. Check out the examples and dive into the code for a deeper impression. The code of all JavaScript files is fully commented.
+For a detailed documentation, head over to the [docs](doc/DOCS.md) or the <a href="http://matthiasschuetz.com/three-basicthirdpersongame/docs">official website</a> and learn how to use it. THREE.BasicThirdPersonGame ought to be an interactive tutorial and starting point for your WebGL game based on THREE.js. On this page you should get on overview of how to get the framework up and running. Check out the examples and dive into the code for a deeper impression. The code of all JavaScript files is fully commented.
 
 Below you will find the basic setup for the game including all necessary files. Normally you start editing the game.core.js since the whole game logic is placed there. Every provided example has its own game.core.demo.js file where the logic only differs slightly. All demos are based on the main libraries and game component files.
 
