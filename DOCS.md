@@ -49,7 +49,7 @@ These are the versions, THREE.BasicThirdPersonGame is based on:
 * [THREE.js r61](https://github.com/mrdoob/three.js/tree/r61)
 * [Cannon.js 0.5.0 (fork by Daniel Ribeiro)](https://github.com/danielribeiro/cannon.js/)
 
-The best advice is just to stick to the library files that come with THREE.BasicThirdPersonGame so you don't have to care about this topic. Maybe there will be an update to this framework in the future to work with newer versions of the libraries but you can also [contribute](<?php echo $hrefContribute; ?>) to do this by yourself.
+The best advice is just to stick to the library files that come with THREE.BasicThirdPersonGame so you don't have to care about this topic. Maybe there will be an update to this framework in the future to work with newer versions of the libraries but you can also [contribute](http://matthiasschuetz.com/three-basicthirdpersongame/contribute) to do this by yourself.
 
 ### Basic concept
 
@@ -401,7 +401,7 @@ Then a 3D model is used for the player. This topic is shortly explained in [a la
 _three.createModel(window.game.models.player, 12, new THREE.MeshLambertMaterial({ ... });
 ```
 
-In _window.game.models.player_ the complete 3D JSON model is stored as [JSON Model format 3](https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3). To summarize this topic: by default THREE.BasicThirdPersonGame loads 3D models **synchronously** via _<script>_ and stores them in _window.game.models_ so the game can access the 3D model data instantly after all files have been loaded. If you want to import models **asynchronously** you can do this with THREE.JSONLoader in your **index.html** file and instantiate the game in the loaded callback. This approach is described in the section below.
+In _window.game.models.player_ the complete 3D JSON model is stored as [JSON Model format 3](https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3). To summarize this topic: by default THREE.BasicThirdPersonGame loads 3D models **synchronously** via _script_ and stores them in _window.game.models_ so the game can access the 3D model data instantly after all files have been loaded. If you want to import models **asynchronously** you can do this with THREE.JSONLoader in your **index.html** file and instantiate the game in the loaded callback. This approach is described in the section below.
 
 Aside from the assigned THREE.MeshLambertMaterial, _three.createModel receives the number 12 as second parameter which defines the scale of the imported model. The scale is as important as the [creation of a valid 3D model](#creating-3d-models). It's necessary that your model has a correct origin in order to make the bounding spheres (and AABBs) and collision detection of Cannon work correctly. The __three.createModel_ method already does some important work for you since it aligns the imported 3D model to Cannon's vertical Z axis and also computes the half extents which are necessary for the correct bounding sphere size.
 
@@ -563,7 +563,7 @@ Usually the import should be fine when using __three.createModel_ but if problem
 
 ### Basic user interface
 
-THREE.BasicThirdPersonGame also comes with a small user interface component that is also used in the [examples](<?php echo $hrefExamples; ?>). It's up to you whether you build the UI with WebGL and 2D shapes in 3D space or you simply go with HTML and CSS which offer excellent possibilities for all kinds of interface design. You can use the _cameraSizeConstraint_ option to reserve some free space for user interface elements but you could also work with overlays that are placed on top of the WebGL canvas layer. The _game.ui.js_ file provides some basic helper methods like _fadeOut_, _addClass_, _removeClass_ and _hasClass_ in order to set CSS classes dynamically. The demo game is based on these helpers and the whole interface animatons are done via class toggling and CSS3 transitions.
+THREE.BasicThirdPersonGame also comes with a small user interface component that is also used in the [examples](http://matthiasschuetz.com/three-basicthirdpersongame/examples). It's up to you whether you build the UI with WebGL and 2D shapes in 3D space or you simply go with HTML and CSS which offer excellent possibilities for all kinds of interface design. You can use the _cameraSizeConstraint_ option to reserve some free space for user interface elements but you could also work with overlays that are placed on top of the WebGL canvas layer. The _game.ui.js_ file provides some basic helper methods like _fadeOut_, _addClass_, _removeClass_ and _hasClass_ in order to set CSS classes dynamically. The demo game is based on these helpers and the whole interface animatons are done via class toggling and CSS3 transitions.
 
 ### Final example
 
