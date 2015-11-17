@@ -1,7 +1,7 @@
 /*
- * Game Core - Demo 1 (Simple demo)
+ * Game Core - Demo 5 (Shadows)
  *
- * A simple example with basic controls (see _game.core.js for an uncommented version of this file)
+ * A simple example that implements THREE.js shadows (same as game.core.demo1.js but with some advancements)
  */
 
 window.game = window.game || {};
