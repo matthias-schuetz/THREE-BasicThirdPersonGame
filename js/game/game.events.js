@@ -35,6 +35,7 @@ window.game.events = function() {
 			onKeyUp: function(event) {
 				// Unset the pressed state for a key
 				_events.keyboard.pressed[_events.keyboard.keyCodes[event.keyCode]] = false;
+				_events.onKeyUp();
 			}
 		},
 

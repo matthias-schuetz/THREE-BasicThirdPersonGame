@@ -1,0 +1,32 @@
+<html>
+<head></head>
+
+<body>
+	<div id="game"></div>
+
+	<script src="js/libs/detector.js"></script>
+	<script src="js/libs/three.js"></script>
+	<script src="js/libs/cannon.js"></script>
+
+	<script src="js/game/game.static.js"></script>
+	<script src="js/game/game.three.js"></script>
+	<script src="js/game/game.cannon.js"></script>
+	<script src="js/game/game.events.js"></script>
+	<script src="js/game/game.helpers.js"></script>
+	<script src="js/game/game.ui.js"></script>
+	<script src="js/game/game.core.js"></script>
+	<script src="js/game/game.models.js"></script>
+
+	<script>
+	if (!Detector.webgl) {
+		Detector.addGetWebGLMessage();
+	} else {
+		window.gameInstance = window.game.core();
+		window.gameInstance.init({
+			domContainer: document.querySelector("#game"),
+			rendererClearColor: 0xffffff
+		});
+	}
+	</script>
+</body>
+</html>
