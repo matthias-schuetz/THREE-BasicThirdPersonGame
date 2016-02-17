@@ -16,12 +16,13 @@ window.game.core = function () {
 			isTurningLeft: false,
 			leftTiltLimit: 91 * Math.PI / 180,
 			rightTiltLimit: 89 * Math.PI / 180,
-			maxTiltLeft: 120 * Math.PI / 180,
-			maxTiltRight: 50 * Math.PI / 180,
+			maxTiltLeft: 110 * Math.PI / 180,
+			maxTiltRight: 65 * Math.PI / 180,
 			tiltStep: 1 * Math.PI / 180,
 
-			//Light trail
+			//Bottom Light trail
 			trailGeometry: null,
+			trailGeometryTop: null,
 			trailSize: 10000,
 			trailOffset: null,
 			trailMaterial: null,
@@ -39,11 +40,11 @@ window.game.core = function () {
 
 			// Jump flags
 			isGrounded: false,
-			jumpHeight: 38,
+			jumpHeight: 45,
 
 			// Configuration for player speed (acceleration and maximum speed)
-			speed: 10.0,
-			speedMax: 145,
+			speed: 30.0,
+			speedMax: 245,
 			// Configuration for player rotation (rotation acceleration and maximum rotation speed)
 			rotationSpeed: 0.007,
 			rotationSpeedMax: 0.04,
@@ -76,7 +77,7 @@ window.game.core = function () {
 			playerCoords: null,
 			cameraCoords: null,
 			// Camera offsets behind the player (horizontally and vertically)
-			cameraOffsetH: 140,
+			cameraOffsetH: 200,
 			cameraOffsetV: 60,
 
 			// Keyboard configuration for game.events.js (controlKeys must be associated to game.events.keyboard.keyCodes)
@@ -99,9 +100,6 @@ window.game.core = function () {
 					new THREE.MeshLambertMaterial({ color: window.game.static.colors.green,transparent: true, opacity: 0.0, shading: THREE.FlatShading })
 				]);
 
-				//_game.player.model.mesh.scale.x = 3;
-				//_game.player.model.mesh.scale.z = 3;
-
 				_game.player.model.mesh.applyMatrix( new THREE.Matrix4().makeScale( 2, 1, 1 ) )
 
 				//add cycle
@@ -114,11 +112,10 @@ window.game.core = function () {
 				cycle.scale.set(10,10,10);
 				cycle.rotation.x = 90 * Math.PI / 180;
 
-				//add the model to the player
-				cycle.applyMatrix( new THREE.Matrix4().makeScale( 6, 10, 10 ) )
 				//set the scale
+				cycle.applyMatrix( new THREE.Matrix4().makeScale( 6, 10, 10 ) )
+
 				_game.player.model.mesh.add(cycle);
-				//_three.scene.add(cycle);
 
 				// Create the shape, mesh and rigid body for the player character and assign the physics material to it
 				_game.player.shape = new CANNON.Box(_game.player.model.halfExtents);
@@ -153,8 +150,11 @@ window.game.core = function () {
 			trail: {
 				create: function() {
 					var trailLine;
+					var trailLineTop;
 
 					_game.player.trailGeometry = new THREE.Geometry();
+					_game.player.trailGeometryTop = new THREE.Geometry();
+
 					_game.player.trailMaterial = new THREE.LineBasicMaterial({
 						color: window.game.static.colors.neonblue,
 						linewidth: 1000
@@ -162,26 +162,53 @@ window.game.core = function () {
 
 					for (var i = 0; i < _game.player.trailSize; i++) {
 						_game.player.trailGeometry.vertices.push(new THREE.Vector3(0, 0, 50));
+						_game.player.trailGeometryTop.vertices.push(new THREE.Vector3(0, 0, 50));
 					}
 
 					trailLine = new THREE.Line(_game.player.trailGeometry, _game.player.trailMaterial);
+					trailLineTop = new THREE.Line(_game.player.trailGeometryTop, _game.player.trailMaterial);
 
 					_three.scene.add(trailLine);
+					_three.scene.add(trailLineTop);
 				},
 				update: function() {
-					_game.trailOffset = window.game.helpers.polarToCartesian(0, _game.player.rotationRadians.z);
 
 					_game.player.trailGeometry.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
-							_game.player.mesh.position.x + _game.trailOffset.x,
-							_game.player.mesh.position.y - _game.trailOffset.y,
+							_game.player.mesh.position.x,
+							_game.player.mesh.position.y,
 						_game.player.mesh.position.z
+					);
+
+					_game.player.trailGeometryTop.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
+						_game.player.mesh.position.x,
+						_game.player.mesh.position.y,
+						_game.player.mesh.position.z + 15
 					);
 
 					for (var i = 0; i < _game.player.trailSize - 1; i++) {
 						_game.player.trailGeometry.vertices[i] = _game.player.trailGeometry.vertices[i + 1];
 					}
 
+					for (var i = 0; i < _game.player.trailSize - 1; i++) {
+						_game.player.trailGeometryTop.vertices[i] = _game.player.trailGeometryTop.vertices[i + 1];
+					}
+
+					////draw a connecting line
+					//var cLineMaterial = new THREE.LineBasicMaterial({
+					//	color: 0x0000ff
+					//});
+                    //
+					//var cLineGeometry = new THREE.Geometry();
+					//cLineGeometry.vertices.push(_game.player.trailGeometryTop.vertices[i]);
+					//cLineGeometry.vertices.push(_game.player.trailGeometry.vertices[i]);
+					//cLineGeometry.vertices.push(_game.player.trailGeometryTop.vertices[i]);
+                    //
+					//var cLine = new THREE.Line(cLineGeometry, cLineMaterial);
+                    //
+					//_three.scene.add(cLine);
+
 					_game.player.trailGeometry.verticesNeedUpdate = true;
+					_game.player.trailGeometryTop.verticesNeedUpdate = true;
 				}
 			},
 			update: function() {
@@ -191,6 +218,9 @@ window.game.core = function () {
 				_game.player.rotate();
 				_game.player.updateCamera();
 				_game.player.drawLightTrail();
+
+				//always move forward
+				_game.player.updateAcceleration(_game.player.playerAccelerationValues.position, 1);
 
 				//update the light trail
 				_game.player.trail.update();
@@ -210,6 +240,7 @@ window.game.core = function () {
 				// Place camera focus on player mesh
 				_three.camera.lookAt(_game.player.mesh.position);
 			},
+
 			updateAcceleration: function(values, direction) {
 				// Distinguish between acceleration/rotation and forward/right (1) and backward/left (-1)
 				if (direction === 1) {
@@ -293,12 +324,10 @@ window.game.core = function () {
 				//if the player is tilted right
 				if (!_game.player.isTurningRight && _game.player.tilt < _game.player.rightTiltLimit) {
 					_game.player.tilt += _game.player.tiltStep;
-					console.log(_game.player.tilt);
 				}
 				//if the player is tilted left
 				else if (!_game.player.isTurningLeft && _game.player.tilt > _game.player.leftTiltLimit) {
 					_game.player.tilt -= _game.player.tiltStep;
-					console.log(_game.player.tilt);
 				}
 			},
 			rotate: function() {
@@ -360,63 +389,34 @@ window.game.core = function () {
 				_cannon.solidMaterial = _cannon.createPhysicsMaterial(new CANNON.Material("solidMaterial"), 0, 0.1);
 
 				// Define floor settings
-				var floorSize = 2000;
-				var floorHeight = 20;
+				var floorSize = 50000;
+				var floorHeight = 5;
 
 				// Add a floor
 				_cannon.createRigidBody({
 					shape: new CANNON.Box(new CANNON.Vec3(floorSize, floorSize, floorHeight)),
 					mass: 0,
 					position: new CANNON.Vec3(0, 0, -floorHeight),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.black }),
+					meshMaterial: new THREE.MeshPhongMaterial({ color: window.game.static.colors.black }),
 					physicsMaterial: _cannon.solidMaterial
 				});
 
-				// Add some boxes
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-240, -200, 30 - 1),
+				var box = _cannon.createRigidBody({
+					shape: new CANNON.Box(new CANNON.Vec3(200, 200, 200)),
+					mass: 1,
+					position: new CANNON.Vec3(-320, 0, 20),
 					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
 					physicsMaterial: _cannon.solidMaterial
 				});
 
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-300, -260, 90),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
 
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-180, -200, 150),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
 
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-120, -140, 210),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
-
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-60, -80, 270),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
 
 				// Grid Helper
-				var grid = new THREE.GridHelper(floorSize, floorSize / 40);
+				var grid = new THREE.GridHelper(floorSize, floorSize / 200);
 				grid.position.z = 0.5;
 				grid.rotation.x = window.game.helpers.degToRad(90);
+				grid.setColors(window.game.static.colors.green,window.game.static.colors.green);
 				_three.scene.add(grid);
 			}
 		},
@@ -481,6 +481,7 @@ window.game.core = function () {
 				var pointLight = new THREE.PointLight(window.game.static.colors.white, 0.5);
 				pointLight.position.set(0, 0, 500);
 				_three.scene.add(pointLight);
+
 			};
 
 			// Initialize components with options
