@@ -27,6 +27,9 @@ window.game.core = function () {
 			trailOffset: null,
 			trailMaterial: null,
 
+			//lightbox
+			lightBox: null,
+
 			// Player entity including mesh and rigid body
 			model: null,
 			mesh: null,
@@ -115,6 +118,13 @@ window.game.core = function () {
 				//set the scale
 				cycle.applyMatrix( new THREE.Matrix4().makeScale( 6, 10, 10 ) )
 
+				//add a box for the light to come from
+				var geometry = new THREE.CubeGeometry(.2, 3, 2 );
+				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00,transparent: true, opacity: 0.0} );
+				_game.player.lightBox = new THREE.Mesh( geometry, material );
+				_game.player.lightBox.position.set(5,2,0);
+				cycle.add( _game.player.lightBox );
+
 				_game.player.model.mesh.add(cycle);
 
 				// Create the shape, mesh and rigid body for the player character and assign the physics material to it
@@ -172,17 +182,22 @@ window.game.core = function () {
 					_three.scene.add(trailLineTop);
 				},
 				update: function() {
+					//get the position of the lightbox
+					_three.scene.updateMatrixWorld();
+					var newPosition = new THREE.Vector3();
+					newPosition.getPositionFromMatrix(_game.player.lightBox.matrixWorld);
+					console.log(newPosition);
 
 					_game.player.trailGeometry.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
-							_game.player.mesh.position.x,
-							_game.player.mesh.position.y,
-						_game.player.mesh.position.z
+						newPosition.x,
+						newPosition.y,
+						newPosition.z - 8
 					);
 
 					_game.player.trailGeometryTop.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
-						_game.player.mesh.position.x,
-						_game.player.mesh.position.y,
-						_game.player.mesh.position.z + 15
+						newPosition.x,
+						newPosition.y,
+						newPosition.z + 4
 					);
 
 					for (var i = 0; i < _game.player.trailSize - 1; i++) {
@@ -192,20 +207,6 @@ window.game.core = function () {
 					for (var i = 0; i < _game.player.trailSize - 1; i++) {
 						_game.player.trailGeometryTop.vertices[i] = _game.player.trailGeometryTop.vertices[i + 1];
 					}
-
-					////draw a connecting line
-					//var cLineMaterial = new THREE.LineBasicMaterial({
-					//	color: 0x0000ff
-					//});
-                    //
-					//var cLineGeometry = new THREE.Geometry();
-					//cLineGeometry.vertices.push(_game.player.trailGeometryTop.vertices[i]);
-					//cLineGeometry.vertices.push(_game.player.trailGeometry.vertices[i]);
-					//cLineGeometry.vertices.push(_game.player.trailGeometryTop.vertices[i]);
-                    //
-					//var cLine = new THREE.Line(cLineGeometry, cLineMaterial);
-                    //
-					//_three.scene.add(cLine);
 
 					_game.player.trailGeometry.verticesNeedUpdate = true;
 					_game.player.trailGeometryTop.verticesNeedUpdate = true;
@@ -217,7 +218,6 @@ window.game.core = function () {
 				_game.player.accelerate();
 				_game.player.rotate();
 				_game.player.updateCamera();
-				_game.player.drawLightTrail();
 
 				//always move forward
 				_game.player.updateAcceleration(_game.player.playerAccelerationValues.position, 1);
@@ -345,9 +345,6 @@ window.game.core = function () {
 					_game.player.rotationAcceleration *= _game.player.rotationDamping;
 				}
 			},
-			drawLightTrail() {
-
-			},
 			jump: function() {
 				// Perform a jump if player has collisions and the collision contact is beneath him (ground)
 				if (_cannon.getCollisions(_game.player.rigidBody.index) && _game.player.isGrounded) {
@@ -408,8 +405,6 @@ window.game.core = function () {
 					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
 					physicsMaterial: _cannon.solidMaterial
 				});
-
-
 
 
 				// Grid Helper
