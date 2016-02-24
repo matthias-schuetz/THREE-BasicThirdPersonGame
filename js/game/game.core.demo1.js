@@ -10,7 +10,25 @@ window.game.core = function () {
 	var _game = {
 		// Attributes
 		player: {
-			// Attributes
+			// Tilt Attributes
+			tilt: 90 * Math.PI / 180,
+			isTurningRight: false,
+			isTurningLeft: false,
+			leftTiltLimit: 91 * Math.PI / 180,
+			rightTiltLimit: 89 * Math.PI / 180,
+			maxTiltLeft: 110 * Math.PI / 180,
+			maxTiltRight: 65 * Math.PI / 180,
+			tiltStep: 1 * Math.PI / 180,
+
+			//Bottom Light trail
+			trailGeometry: null,
+			trailGeometryTop: null,
+			trailSize: 10000,
+			trailOffset: null,
+			trailMaterial: null,
+
+			//lightbox
+			lightBox: null,
 
 			// Player entity including mesh and rigid body
 			model: null,
@@ -18,18 +36,18 @@ window.game.core = function () {
 			shape: null,
 			rigidBody: null,
 			// Player mass which affects other rigid bodies in the world
-			mass: 3,
+			mass: 10,
 
 			// HingeConstraint to limit player's air-twisting
 			orientationConstraint: null,
 
 			// Jump flags
 			isGrounded: false,
-			jumpHeight: 38,
+			jumpHeight: 45,
 
 			// Configuration for player speed (acceleration and maximum speed)
-			speed: 1.5,
-			speedMax: 45,
+			speed: 30.0,
+			speedMax: 245,
 			// Configuration for player rotation (rotation acceleration and maximum rotation speed)
 			rotationSpeed: 0.007,
 			rotationSpeedMax: 0.04,
@@ -62,8 +80,8 @@ window.game.core = function () {
 			playerCoords: null,
 			cameraCoords: null,
 			// Camera offsets behind the player (horizontally and vertically)
-			cameraOffsetH: 240,
-			cameraOffsetV: 140,
+			cameraOffsetH: 200,
+			cameraOffsetV: 60,
 
 			// Keyboard configuration for game.events.js (controlKeys must be associated to game.events.keyboard.keyCodes)
 			controlKeys: {
@@ -73,17 +91,41 @@ window.game.core = function () {
 				right: "d",
 				jump: "space"
 			},
-			
+
 			// Methods
 			create: function() {
 				// Create a global physics material for the player which will be used as ContactMaterial for all other objects in the level
 				_cannon.playerPhysicsMaterial = new CANNON.Material("playerMaterial");
 
 				// Create a player character based on an imported 3D model that was already loaded as JSON into game.models.player
-				_game.player.model = _three.createModel(window.game.models.player, 12, [
-					new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan, shading: THREE.FlatShading }),
-					new THREE.MeshLambertMaterial({ color: window.game.static.colors.green, shading: THREE.FlatShading })
+				_game.player.model = _three.createModel(window.game.models.player, 25, [
+					new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan,transparent: true, opacity: 0.0, shading: THREE.FlatShading }),
+					new THREE.MeshLambertMaterial({ color: window.game.static.colors.green,transparent: true, opacity: 0.0, shading: THREE.FlatShading })
 				]);
+
+				_game.player.model.mesh.applyMatrix( new THREE.Matrix4().makeScale( 2, 1, 1 ) )
+
+				//add cycle
+				var loader = new THREE.ObjectLoader();
+				var cycle = new THREE.Object3D();
+				loader.load("game.tron.json",function (obj) {
+				     cycle.add(obj);
+				});
+
+				cycle.scale.set(10,10,10);
+				cycle.rotation.x = 90 * Math.PI / 180;
+
+				//set the scale
+				cycle.applyMatrix( new THREE.Matrix4().makeScale( 6, 10, 10 ) )
+
+				//add a box for the light to come from
+				var geometry = new THREE.CubeGeometry(.2, 3, 2 );
+				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00,transparent: true, opacity: 0.0} );
+				_game.player.lightBox = new THREE.Mesh( geometry, material );
+				_game.player.lightBox.position.set(5,2,0);
+				cycle.add( _game.player.lightBox );
+
+				_game.player.model.mesh.add(cycle);
 
 				// Create the shape, mesh and rigid body for the player character and assign the physics material to it
 				_game.player.shape = new CANNON.Box(_game.player.model.halfExtents);
@@ -111,6 +153,64 @@ window.game.core = function () {
 						_game.player.isGrounded = (new CANNON.Ray(_game.player.mesh.position, new CANNON.Vec3(0, 0, -1)).intersectBody(event.contact.bi).length > 0);
 					}
 				});
+
+				//create the trail
+				_game.player.trail.create();
+			},
+			trail: {
+				create: function() {
+					var trailLine;
+					var trailLineTop;
+
+					_game.player.trailGeometry = new THREE.Geometry();
+					_game.player.trailGeometryTop = new THREE.Geometry();
+
+					_game.player.trailMaterial = new THREE.LineBasicMaterial({
+						color: window.game.static.colors.neonblue,
+						linewidth: 1000
+					});
+
+					for (var i = 0; i < _game.player.trailSize; i++) {
+						_game.player.trailGeometry.vertices.push(new THREE.Vector3(0, 0, 50));
+						_game.player.trailGeometryTop.vertices.push(new THREE.Vector3(0, 0, 50));
+					}
+
+					trailLine = new THREE.Line(_game.player.trailGeometry, _game.player.trailMaterial);
+					trailLineTop = new THREE.Line(_game.player.trailGeometryTop, _game.player.trailMaterial);
+
+					_three.scene.add(trailLine);
+					_three.scene.add(trailLineTop);
+				},
+				update: function() {
+					//get the position of the lightbox
+					_three.scene.updateMatrixWorld();
+					var newPosition = new THREE.Vector3();
+					newPosition.getPositionFromMatrix(_game.player.lightBox.matrixWorld);
+					console.log(newPosition);
+
+					_game.player.trailGeometry.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
+						newPosition.x,
+						newPosition.y,
+						newPosition.z - 8
+					);
+
+					_game.player.trailGeometryTop.vertices[_game.player.trailSize - 1] = new THREE.Vector3(
+						newPosition.x,
+						newPosition.y,
+						newPosition.z + 4
+					);
+
+					for (var i = 0; i < _game.player.trailSize - 1; i++) {
+						_game.player.trailGeometry.vertices[i] = _game.player.trailGeometry.vertices[i + 1];
+					}
+
+					for (var i = 0; i < _game.player.trailSize - 1; i++) {
+						_game.player.trailGeometryTop.vertices[i] = _game.player.trailGeometryTop.vertices[i + 1];
+					}
+
+					_game.player.trailGeometry.verticesNeedUpdate = true;
+					_game.player.trailGeometryTop.verticesNeedUpdate = true;
+				}
 			},
 			update: function() {
 				// Basic game logic to update player and camera
@@ -118,6 +218,12 @@ window.game.core = function () {
 				_game.player.accelerate();
 				_game.player.rotate();
 				_game.player.updateCamera();
+
+				//always move forward
+				_game.player.updateAcceleration(_game.player.playerAccelerationValues.position, 1);
+
+				//update the light trail
+				_game.player.trail.update();
 
 				// Level-specific logic
 				_game.player.checkGameOver();
@@ -134,6 +240,7 @@ window.game.core = function () {
 				// Place camera focus on player mesh
 				_three.camera.lookAt(_game.player.mesh.position);
 			},
+
 			updateAcceleration: function(values, direction) {
 				// Distinguish between acceleration/rotation and forward/right (1) and backward/left (-1)
 				if (direction === 1) {
@@ -182,10 +289,23 @@ window.game.core = function () {
 
 				if (_events.keyboard.pressed[_game.player.controlKeys.right]) {
 					_game.player.updateAcceleration(_game.player.playerAccelerationValues.rotation, 1);
+					console.log("right key pressed - " + _game.player.tilt);
+
+					//the player is turning right
+					_game.player.isTurningRight = true;
+
+					//increase the tilt
+					if (_game.player.tilt > _game.player.maxTiltRight) {
+						_game.player.tilt -= _game.player.tiltStep;
+					}
 				}
 
 				if (_events.keyboard.pressed[_game.player.controlKeys.left]) {
 					_game.player.updateAcceleration(_game.player.playerAccelerationValues.rotation, -1);
+					_game.player.isTurningLeft = true;
+					if (_game.player.tilt < _game.player.maxTiltLeft) {
+						_game.player.tilt += _game.player.tiltStep;
+					}
 				}
 			},
 			accelerate: function() {
@@ -200,9 +320,25 @@ window.game.core = function () {
 					_game.player.acceleration *= _game.player.damping;
 				}
 			},
+			resetTilt: function() {
+				//if the player is tilted right
+				if (!_game.player.isTurningRight && _game.player.tilt < _game.player.rightTiltLimit) {
+					_game.player.tilt += _game.player.tiltStep;
+				}
+				//if the player is tilted left
+				else if (!_game.player.isTurningLeft && _game.player.tilt > _game.player.leftTiltLimit) {
+					_game.player.tilt -= _game.player.tiltStep;
+				}
+			},
 			rotate: function() {
 				// Rotate player around Z axis
 				_cannon.rotateOnAxis(_game.player.rigidBody, new CANNON.Vec3(0, 0, 1), _game.player.rotationAcceleration);
+
+				//titlt player model
+				_game.player.model.mesh.children[0].rotation.x = _game.player.tilt;
+
+				//update tilt towardds normal
+				_game.player.resetTilt();
 
 				// Damping
 				if (!_events.keyboard.pressed[_game.player.controlKeys.left] && !_events.keyboard.pressed[_game.player.controlKeys.right]) {
@@ -250,63 +386,32 @@ window.game.core = function () {
 				_cannon.solidMaterial = _cannon.createPhysicsMaterial(new CANNON.Material("solidMaterial"), 0, 0.1);
 
 				// Define floor settings
-				var floorSize = 800;
-				var floorHeight = 20;
+				var floorSize = 50000;
+				var floorHeight = 5;
 
 				// Add a floor
 				_cannon.createRigidBody({
 					shape: new CANNON.Box(new CANNON.Vec3(floorSize, floorSize, floorHeight)),
 					mass: 0,
 					position: new CANNON.Vec3(0, 0, -floorHeight),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.black }),
+					meshMaterial: new THREE.MeshPhongMaterial({ color: window.game.static.colors.black }),
 					physicsMaterial: _cannon.solidMaterial
 				});
 
-				// Add some boxes
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-240, -200, 30 - 1),
+				var box = _cannon.createRigidBody({
+					shape: new CANNON.Box(new CANNON.Vec3(200, 200, 200)),
+					mass: 1,
+					position: new CANNON.Vec3(-320, 0, 20),
 					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
 					physicsMaterial: _cannon.solidMaterial
 				});
 
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-300, -260, 90),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
-
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-180, -200, 150),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
-
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-120, -140, 210),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
-
-				_cannon.createRigidBody({
-					shape: new CANNON.Box(new CANNON.Vec3(30, 30, 30)),
-					mass: 0,
-					position: new CANNON.Vec3(-60, -80, 270),
-					meshMaterial: new THREE.MeshLambertMaterial({ color: window.game.static.colors.cyan }),
-					physicsMaterial: _cannon.solidMaterial
-				});
 
 				// Grid Helper
-				var grid = new THREE.GridHelper(floorSize, floorSize / 10);
+				var grid = new THREE.GridHelper(floorSize, floorSize / 200);
 				grid.position.z = 0.5;
 				grid.rotation.x = window.game.helpers.degToRad(90);
+				grid.setColors(window.game.static.colors.green,window.game.static.colors.green);
 				_three.scene.add(grid);
 			}
 		},
@@ -371,6 +476,7 @@ window.game.core = function () {
 				var pointLight = new THREE.PointLight(window.game.static.colors.white, 0.5);
 				pointLight.position.set(0, 0, 500);
 				_three.scene.add(pointLight);
+
 			};
 
 			// Initialize components with options
@@ -385,6 +491,12 @@ window.game.core = function () {
 					_ui.fadeOut("infoboxIntro");
 				}
 			};
+
+			_events.onKeyUp = function(event) {
+				//No longer turning
+				_game.player.isTurningRight = false;
+				_game.player.isTurningLeft = false;
+			}
 		}
 	};
 
