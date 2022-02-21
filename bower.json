@@ -2,7 +2,7 @@
   "name": "three-basicthirdpersongame",
   "version": "1.0.0",
   "authors": [
-    "matthias-schuetz <MatthiasSchuetz@gmx.de>"
+    "matthias-schuetz <matthias@matthiasschuetz.com>"
   ],
   "description": "JavaScript starter kit for your next WebGL 3D game based on THREE.js + Cannon.js",
   "main": [

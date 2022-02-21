@@ -2,7 +2,7 @@
 
 ## Documentation
 
-This is the GitHub version of the [official documentation](http://matthiasschuetz.com/three-basicthirdpersongame/docs). Feel free to extend it.
+This is the GitHub version of the [official documentation](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame). Feel free to extend it.
 
 **Table of Contents**
 
@@ -49,21 +49,17 @@ These are the versions, THREE.BasicThirdPersonGame is based on:
 * [THREE.js r61](https://github.com/mrdoob/three.js/tree/r61)
 * [Cannon.js 0.5.0 (fork by Daniel Ribeiro)](https://github.com/danielribeiro/cannon.js/)
 
-The best advice is just to stick to the library files that come with THREE.BasicThirdPersonGame so you don't have to care about this topic. Maybe there will be an update to this framework in the future to work with newer versions of the libraries but you can also [contribute](http://matthiasschuetz.com/three-basicthirdpersongame/contribute) to do this by yourself.
+The best advice is just to stick to the library files that come with THREE.BasicThirdPersonGame so you don't have to care about this topic. Maybe there will be an update to this framework in the future to work with newer versions of the libraries but you can also [contribute](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame) to do this by yourself.
 
 ### Basic concept
 
 THREE.BasicThirdPersonGame is a set of JavaScript files which form the starting point for a 3D game using a third-person camera system. In contrast to a first-person (or ego) perspective, a third-person camera automatically follows the main player character or player vehicle of the game and provides an "over the shoulder" view.
-
-![Third-person camera system (Blender preview)](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_thirdpersoncamera.png "Third-person camera system (Blender preview)")
 
 The idea of a follow camera is an easy task with THREE.js since the camera only needs to retreive the current position of the player's mesh. But there also needs to be a connection to the Cannon.js physics and that's one reason why THREE.BasicThirdPersonGame is built up using different modules.
 
 ### Game modules
 
 Each file is responsible for a specific part of the game logic whereas the heart of the game code is placed in _game.core.js_.
-
-![THREE.BasicThirdPersonGame modules](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_gamemodules.png "THREE.BasicThirdPersonGame modules")
 
 As you can see, there are two certain modules for THREE.js and Cannon.js which handle the communication behind the scenes. A brief overview of modules:
 
@@ -187,7 +183,7 @@ window.game.core = function () {
 };
 ```
 
-Finally you see the central place for all the game logic. This file contains the whole player and level structure including all needed properties. The player's acceleration and rotation as well as the camera movement are defined here. The snippet also represents a basic game where the player can be controlled through a simple level. For the [platforms demo game](http://matthiasschuetz.com/webgl-platforms-game), simply the _level_ object has been extended with additional logic. Of course you could add more JavaScript files for more complex levels.
+Finally you see the central place for all the game logic. This file contains the whole player and level structure including all needed properties. The player's acceleration and rotation as well as the camera movement are defined here. The snippet also represents a basic game where the player can be controlled through a simple level. For the [platforms demo game](https://github.com/matthias-schuetz/webgl-platforms-game), simply the _level_ object has been extended with additional logic. Of course you could add more JavaScript files for more complex levels.
 
 #### game.events.js
 
@@ -295,9 +291,7 @@ destroy: function() {
 
 ### Game loop
 
-The game loop or main loop of the game is the place where the information processing and scene rendering come together to generate a visual output. The speed of the game loop will be determined by the browser's _requestAnimationFrame_ method and will usually result in a framerate of 60 fps. The _requestAnimationFrame_ method calls the game loop function again to create an endless recursive loop. Inside the loop there are only three things that happen: update Cannon.js physics, update the player and render output via THREE.js. The function calls look like this:
-
-![THREE.BasicThirdPersonGame game loop](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_gameloop.png "THREE.BasicThirdPersonGame game loop")
+The game loop or main loop of the game is the place where the information processing and scene rendering come together to generate a visual output. The speed of the game loop will be determined by the browser's _requestAnimationFrame_ method and will usually result in a framerate of 60 fps. The _requestAnimationFrame_ method calls the game loop function again to create an endless recursive loop. Inside the loop there are only three things that happen: update Cannon.js physics, update the player and render output via THREE.js.
 
 While _updatePhysics_ does nothing special but synchronizing the bodies' and visuals' positions and quaternions, it's worth having a quick look at __game.player.update()_.
 
@@ -315,8 +309,6 @@ As you can see the methods are self explaining: we process the user input (press
 ### Cannon.js coordinates
 
 Now we can have a look at the game logic itself. Let's start with one essential difference between THREE.js and Cannon.js: their Cartesian coordinate system. While THREE.js is based on a XZ ground plane, Cannon.js uses a XY ground plane so that vertical positions go along the Z axis.
-
-![XYZ coordinate systems of THREE.js and Cannon.js](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_cannonjscoordinates.png "XYZ coordinate systems of THREE.js and Cannon.js")
 
 As you can see the ZY axis are rotated by 90 degrees around the X axis in Cannon. Therefore gravity is defined like this in _game.cannon.js_:
 
@@ -544,8 +536,6 @@ loader.load("js/game/game.models.js", function(geometry, materials) {
 
 This time we load the 3D JSON model data into _window.game.models.player_ manually. Regardless of whether you load your 3D models via HTTP request or XMLHttpRequest, you should end up having something like that in the end.
 
-![Imported 3D model and its axis-aligned bounding box (AABB)](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_3dmodelaabb.png "Imported 3D model and its axis-aligned bounding box (AABB)")
-
 The axis-aligned bounding box (AABB) of the imported model is shown for testing purposes. You should always check if the bounding box was created correctly. This can be done by calling __cannon.showAABBs().init();_ in _initComponents_ like the following code snippet does.
 
 ```javascript
@@ -563,14 +553,12 @@ Usually the import should be fine when using __three.createModel_ but if problem
 
 ### Basic user interface
 
-THREE.BasicThirdPersonGame also comes with a small user interface component that is also used in the [examples](http://matthiasschuetz.com/three-basicthirdpersongame/examples). It's up to you whether you build the UI with WebGL and 2D shapes in 3D space or you simply go with HTML and CSS which offer excellent possibilities for all kinds of interface design. You can use the _cameraSizeConstraint_ option to reserve some free space for user interface elements but you could also work with overlays that are placed on top of the WebGL canvas layer. The _game.ui.js_ file provides some basic helper methods like _fadeOut_, _addClass_, _removeClass_ and _hasClass_ in order to set CSS classes dynamically. The demo game is based on these helpers and the whole interface animatons are done via class toggling and CSS3 transitions.
+THREE.BasicThirdPersonGame also comes with a small user interface component that is also used in the [examples](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame). It's up to you whether you build the UI with WebGL and 2D shapes in 3D space or you simply go with HTML and CSS which offer excellent possibilities for all kinds of interface design. You can use the _cameraSizeConstraint_ option to reserve some free space for user interface elements but you could also work with overlays that are placed on top of the WebGL canvas layer. The _game.ui.js_ file provides some basic helper methods like _fadeOut_, _addClass_, _removeClass_ and _hasClass_ in order to set CSS classes dynamically. The demo game is based on these helpers and the whole interface animatons are done via class toggling and CSS3 transitions.
 
 ### Final example
 
-You've reached the end of this document and you if you want to start your game development you should go on looking at the code of _game.core.js_. You will find explaining comments where necessary in the code and you are always free [to contribute](http://matthiasschuetz.com/three-basicthirdpersongame/contribute) to this project.
+You've reached the end of this document and you if you want to start your game development you should go on looking at the code of _game.core.js_. You will find explaining comments where necessary in the code and you are always free [to contribute](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame) to this project.
 
-The last thing you might want to check out is [the working example](http://matthiasschuetz.com/three-basicthirdpersongame/demos/demo1_simple.html). It consists of a player, some level objects and a simple game over logic. For mor demos go to the [examples page](http://matthiasschuetz.com/three-basicthirdpersongame/examples).
-
-[![THREE.BasicThirdPersonGame simple demo](http://matthiasschuetz.com/three-basicthirdpersongame/img/content_demo1.png "THREE.BasicThirdPersonGame simple demo")](http://matthiasschuetz.com/three-basicthirdpersongame/demos/demo1_simple.html) 
+The last thing you might want to check out is [the working example](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame). It consists of a player, some level objects and a simple game over logic. For mor demos go to the [examples page](https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame).
 
 This documentation is a living document and it's intended to be extended in the future. There are many more topics to cover and there will also follow some more examples from time to time.

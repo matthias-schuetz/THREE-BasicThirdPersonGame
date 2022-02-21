@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 					]
 				},
 				options: {
-					banner: '// THREE.BasicThirdPersonGame - http://matthiasschuetz.com/three-basicthirdpersongame' + grunt.util.linefeed,
+					banner: '// THREE.BasicThirdPersonGame - https://github.com/matthias-schuetz/THREE-BasicThirdPersonGame' + grunt.util.linefeed,
 					preserveComments: false
 				}
 			}
